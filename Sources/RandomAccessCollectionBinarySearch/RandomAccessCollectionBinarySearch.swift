@@ -246,7 +246,7 @@ extension RandomAccessCollection where Element: Comparable {
                     if lowerIndex == firstValidIndex {
                         if self[lowerIndex] == targetElement {
                             // target element found and it is the first element
-                            return (nil, index(after: firstValidIndex), firstValidIndex)
+                            return (nil, firstValidIndex, index(after: firstValidIndex))
                         } else {
                             // target element not found
                             return (nil, nil, firstValidIndex)
@@ -257,7 +257,7 @@ extension RandomAccessCollection where Element: Comparable {
                     if lowerIndex == lastValidIndex {
                         if self[lowerIndex] == targetElement {
                             // target element found and it is the last element
-                            return (index(before: lastValidIndex), nil, lastValidIndex)
+                            return (index(before: lastValidIndex), lastValidIndex, nil)
                         } else {
                             // target element not found
                             return (lastValidIndex, nil, nil)
@@ -267,13 +267,13 @@ extension RandomAccessCollection where Element: Comparable {
                     // the index is pointing to an intermediate element
                     if self[lowerIndex] == targetElement {
                         // target element found and it is an intermediate element
-                        return (index(before: lowerIndex), index(after: lowerIndex), lowerIndex)
+                        return (index(before: lowerIndex), lowerIndex, index(after: lowerIndex))
                     } else {
                         // target element not found but it is bracketed
                         if self[lowerIndex] < targetElement {
-                            return (lowerIndex, index(after: lowerIndex), nil)
+                            return (lowerIndex, nil, index(after: lowerIndex))
                         } else {
-                            return (index(before: lowerIndex), lowerIndex, nil)
+                            return (index(before: lowerIndex), nil, lowerIndex)
                         }
                     }
 
@@ -288,7 +288,7 @@ extension RandomAccessCollection where Element: Comparable {
                             return (nil, firstValidIndex, upperIndex)
                         } else if self[upperIndex] == targetElement {
                             // target element found and it is the second element
-                            return (firstValidIndex, index(after: upperIndex), upperIndex)
+                            return (firstValidIndex, upperIndex, index(after: upperIndex))
                         } else {
                             // target element not found
                             return (nil, nil, firstValidIndex)
@@ -302,7 +302,7 @@ extension RandomAccessCollection where Element: Comparable {
                             return (lowerIndex, lastValidIndex, nil)
                         } else if self[lowerIndex] == targetElement {
                             // target element found and it is the next-to-last element
-                            return (index(before: lowerIndex), lastValidIndex, lowerIndex)
+                            return (index(before: lowerIndex), lowerIndex, lastValidIndex)
                         } else {
                             // target element not found
                             return (lastValidIndex, nil, nil)
@@ -314,12 +314,12 @@ extension RandomAccessCollection where Element: Comparable {
 
                     if self[lowerIndex] == targetElement {
                         // target element found and it is an intermediate element
-                        return (index(before: lowerIndex), upperIndex, lowerIndex)
+                        return (index(before: lowerIndex), lowerIndex, upperIndex)
                     }
 
                     if self[upperIndex] == targetElement {
                         // target element found and it is an intermediate element
-                        return (lowerIndex, index(after: upperIndex), upperIndex)
+                        return (lowerIndex, upperIndex, index(after: upperIndex))
                     }
 
                     // target element not found but it is bracketed
@@ -333,7 +333,7 @@ extension RandomAccessCollection where Element: Comparable {
 
                 if self[currentIndex] == targetElement {
                     // target element found and it is an intermediate element
-                    return (index(before: currentIndex), index(after: currentIndex), currentIndex)
+                    return (index(before: currentIndex), currentIndex, index(after: currentIndex))
                 }
 
                 if (self[currentIndex] > targetElement) {
@@ -345,114 +345,6 @@ extension RandomAccessCollection where Element: Comparable {
             }
 
         } else {
-
-            while (true) {
-
-                let upperMinusLower = distance(from: lowerIndex, to: upperIndex)
-
-                if upperMinusLower == 0 { // upperIndex == lowerIndex
-
-                    // is the index pointing to the first element?
-                    if lowerIndex == firstValidIndex {
-                        if self[lowerIndex] == targetElement {
-                            // target element found and it is the first element
-                            return (nil, index(after: firstValidIndex), firstValidIndex)
-                        } else {
-                            // target element not found
-                            return (nil, nil, firstValidIndex)
-                        }
-                    }
-
-                    // is the index pointing to the last element?
-                    if lowerIndex == lastValidIndex {
-                        if self[lowerIndex] == targetElement {
-                            // target element found and it is the last element
-                            return (index(before: lastValidIndex), nil, lastValidIndex)
-                        } else {
-                            // target element not found
-                            return (lastValidIndex, nil, nil)
-                        }
-                    }
-
-                    // the index is pointing to an intermediate element
-                    if self[lowerIndex] == targetElement {
-                        // target element found and it is an intermediate element
-                        return (index(before: lowerIndex), index(after: lowerIndex), lowerIndex)
-                    } else {
-                        // target element not found but it is bracketed
-                        if self[lowerIndex] < targetElement {
-                            return (lowerIndex, index(after: lowerIndex), nil)
-                        } else {
-                            return (index(before: lowerIndex), lowerIndex, nil)
-                        }
-                    }
-
-                }
-
-                if upperMinusLower == 1 { // upperIndex == lowerIndex + 1
-
-                    // is lowerIndex pointing to the first element?
-                    if lowerIndex == firstValidIndex {
-                        if self[lowerIndex] == targetElement {
-                            // target element found and it is the first element
-                            return (nil, firstValidIndex, upperIndex)
-                        } else if self[upperIndex] == targetElement {
-                            // target element found and it is the second element
-                            return (firstValidIndex, index(after: upperIndex), upperIndex)
-                        } else {
-                            // target element not found
-                            return (nil, nil, firstValidIndex)
-                        }
-                    }
-
-                    // is upperIndex pointing to the last element?
-                    if upperIndex == lastValidIndex {
-                        if self[upperIndex] == targetElement {
-                            // target element found and it is the last element
-                            return (lowerIndex, lastValidIndex, nil)
-                        } else if self[lowerIndex] == targetElement {
-                            // target element found and it is the next-to-last element
-                            return (index(before: lowerIndex), lastValidIndex, lowerIndex)
-                        } else {
-                            // target element not found
-                            return (lastValidIndex, nil, nil)
-                        }
-                    }
-
-                    // lowerIndex and upperIndex are pointing to adjacent elements
-                    // that are not at the edges of the input collection
-
-                    if self[lowerIndex] == targetElement {
-                        // target element found and it is an intermediate element
-                        return (index(before: lowerIndex), upperIndex, lowerIndex)
-                    }
-
-                    if self[upperIndex] == targetElement {
-                        // target element found and it is an intermediate element
-                        return (lowerIndex, index(after: upperIndex), upperIndex)
-                    }
-
-                    // target element not found but it is bracketed
-                    return (lowerIndex, nil, upperIndex)
-
-                }
-
-                // upperMinusLower > 1
-
-                let currentIndex = self.index(lowerIndex, offsetBy: upperMinusLower / 2)
-
-                if self[currentIndex] == targetElement {
-                    // target element found and it is an intermediate element
-                    return (index(before: currentIndex), index(after: currentIndex), currentIndex)
-                }
-
-                if (self[currentIndex] > targetElement) {
-                    upperIndex = self.index(before: currentIndex)
-                } else {
-                    lowerIndex = self.index(after: currentIndex)
-                }
-
-            }
 
         }
 
