@@ -1,11 +1,11 @@
 import Foundation
 
-extension RandomAccessCollection where Element: Comparable {
+public extension RandomAccessCollection where Element: Comparable {
 
     /// Returns the index of the target element, if it exists in the
     /// input collection, or `nil`, if it does not. It is assumed that
     /// the collection is sorted.
-    public static func binarySearch(in input: Self, for targetElement: Element) -> Index? {
+    static func binarySearch(in input: Self, for targetElement: Element) -> Index? {
         let (_, targetIndex, _) = input.binarySearchLoHi(for: targetElement)
         return targetIndex
     }
@@ -15,15 +15,15 @@ extension RandomAccessCollection where Element: Comparable {
     /// Returns the index of the target element, if it exists in the
     /// input collection (`self`), or `nil`, if it does not. It is
     /// assumed that the collection is sorted.
-    public func binarySearch(for targetElement: Element) -> Index? {
+    func binarySearch(for targetElement: Element) -> Index? {
         Self.binarySearch(in: self, for: targetElement)
     }
 
     // ---------- //
 
-    /// Returns a tuple containing the **indices** of the two collection elements
+    /// Returns a tuple containing the indices of the two collection elements
     /// that narrowly bracket the target element in the input collection
-    /// (**assumed sorted**), as well as the **index** of the target element itself.
+    /// (**assumed sorted**), as well as the index of the target element itself.
     /// Note that the index of the target element appears **in the middle** of the
     /// returned tuple `(low, target, high)`, and these three indices are *always*
     /// in *ascending order*, regardless of the sorting order of the input collection.
@@ -109,7 +109,7 @@ extension RandomAccessCollection where Element: Comparable {
     ///
     /// For collections with integer indices, `y = x+1` and `z = y+1`.
     ///
-    public static func binarySearchLoHi(in input: Self, for targetElement: Element)
+    static func binarySearchLoHi(in input: Self, for targetElement: Element)
         -> (low: Index?, target: Index?, high: Index?) {
             let (lowIndex, targetIndex, highIndex) = input.binarySearchLoHi(for: targetElement)
             return (lowIndex, targetIndex, highIndex)
@@ -117,9 +117,9 @@ extension RandomAccessCollection where Element: Comparable {
 
     // --- //
 
-    /// Returns a tuple containing the **indices** of the two collection elements
+    /// Returns a tuple containing the indices of the two collection elements
     /// that narrowly bracket the target element in the input collection (`self`,
-    /// **assumed sorted**), as well as the **index** of the target element itself.
+    /// **assumed sorted**), as well as the index of the target element itself.
     /// Note that the index of the target element appears **in the middle** of the
     /// returned tuple `(low, target, high)`, and these three indices are *always*
     /// in *ascending order*, regardless of the sorting order of the input collection.
@@ -205,7 +205,7 @@ extension RandomAccessCollection where Element: Comparable {
     ///
     /// For collections with integer indices, `y = x+1` and `z = y+1`.
     ///
-    public func binarySearchLoHi(for targetElement: Element)
+    func binarySearchLoHi(for targetElement: Element)
         -> (low: Index?, target: Index?, high: Index?) {
 
             guard isEmpty == false else { return (nil, nil, nil) }
