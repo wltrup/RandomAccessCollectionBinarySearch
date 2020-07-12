@@ -24,8 +24,8 @@ extension RandomAccessCollection where Element: Comparable {
     /// Returns a tuple containing the **indices** of the two collection elements
     /// that narrowly bracket the target element in the input collection
     /// (**assumed sorted**), as well as the **index** of the target element itself.
-    /// Note that the index of the target element appears **in the middle**, in
-    /// the returned tuple `(low, target, high)`, and these three indices are *always*
+    /// Note that the index of the target element appears **in the middle** of the
+    /// returned tuple `(low, target, high)`, and these three indices are *always*
     /// in *ascending order*, regardless of the sorting order of the input collection.
     ///
     /// The only possible combinations of these indices are:
@@ -50,14 +50,24 @@ extension RandomAccessCollection where Element: Comparable {
     ///     * `(low, target, high) = (nil, nil, z)`, if the collection is sorted
     ///       in *ascending order*, the target element *is not* in the collection,
     ///       and it is *smaller than* the collection's *smallest* element. `z` is
-    ///       then the index of the collection's *smallest* element.
+    ///       then the index of the collection's *smallest* element. This is also
+    ///       the returned result when the collection is sorted in *descending order*,
+    ///       the target element *is not* in the collection, and it is *larger than*
+    ///       the collection's *largest* element. `z` is then the index of the
+    ///       collection's *largest* element.
     ///
     ///     * `(low, target, high) = (nil, y, z)`, if the collection is sorted
     ///       in *ascending order*, the target element *is* in the collection,
     ///       and it *equals* the collection's *smallest* element. `y` is then
     ///       the found index of the target element and `z` is the index of the
     ///       element *just after* that (the *smallest* element that is still
-    ///       *larger* than the target element).
+    ///       *larger* than the target element). This is also the returned result
+    ///       when the collection is sorted in *descending order*, the target
+    ///       element *is* in the collection, and it *equals* the collection's
+    ///       *largest* element. `y` is then the found index of the target
+    ///       element and `z` is the index of the element *just after* that
+    ///       (the *largest* element that is still *smaller* than the target
+    ///       element).
     ///
     ///     * `(low, target, high) = (x, y, z)`, if the collection is sorted
     ///       in *ascending order*, the target element *is* in the collection,
@@ -66,19 +76,36 @@ extension RandomAccessCollection where Element: Comparable {
     ///       *just before* that (the *largest* element that is still *smaller*
     ///       than the target element) and `z` is the index of the element
     ///       *just after* the target element (the *smallest* element that is
-    ///       still *larger* than the target element).
+    ///       still *larger* than the target element). This is also the returned
+    ///       result when the collection is sorted in *descending order*, the target
+    ///       element *is* in the collection, and it equals some *intermediate*
+    ///       element. `y` is then the found index of the target element, `x` is
+    ///       the index of the element *just before* that (the *smallest* element
+    ///       that is still *larger* than the target element) and `z` is the index
+    ///       of the element *just after* the target element (the *largest* element
+    ///       that is still *smaller* than the target element).
     ///
     ///     * `(low, target, high) = (x, y, nil)`, if the collection is sorted
     ///       in *ascending order*, the target element *is* in the collection,
     ///       and it *equals* the collection's *largest* element. `y` is then
     ///       the found index of the target element and `x` is the index of
     ///       the element *just before* that (the *largest* element that is
-    ///       still *smaller* than the target element).
+    ///       still *smaller* than the target element). This is also the returned
+    ///       result when the collection is sorted in *descending order*, the target
+    ///       element *is* in the collection, and it *equals* the collection's
+    ///       *smallest* element. `y` is then the found index of the target
+    ///       element and `x` is the index of the element *just before* that
+    ///       (the *smallest* element that is still *larger* than the target
+    ///       element).
     ///
     ///     * `(low, target, high) = (x, nil, nil)`, if the collection is sorted
     ///       in *ascending order*, the target element *is not* in the collection,
     ///       and it is *larger than* the collection's *largest* element. `x` is
-    ///       then the index of the collection's *largest* element.
+    ///       then the index of the collection's *largest* element. This is also
+    ///       the returned result when the collection is sorted in *descending order*,
+    ///       the target element *is not* in the collection, and it is *smaller than*
+    ///       the collection's *smallest* element. `x` is then the index of
+    ///       the collection's *smallest* element.
     ///
     /// For collections with integer indices, `y = x+1` and `z = y+1`.
     ///
@@ -90,10 +117,93 @@ extension RandomAccessCollection where Element: Comparable {
 
     // --- //
 
-    /// Returns a tuple containing the two indices that narrowly bracket the target element
-    /// in the input collection (`self`, **assumed sorted**), as well as the index of the
-    /// target element itself. Note that the index of the target element appears
-    /// **in the middle**, in the returned tuple `(low, target, high)`.
+    /// Returns a tuple containing the **indices** of the two collection elements
+    /// that narrowly bracket the target element in the input collection (`self`,
+    /// **assumed sorted**), as well as the **index** of the target element itself.
+    /// Note that the index of the target element appears **in the middle** of the
+    /// returned tuple `(low, target, high)`, and these three indices are *always*
+    /// in *ascending order*, regardless of the sorting order of the input collection.
+    ///
+    /// The only possible combinations of these indices are:
+    ///
+    ///   - The collection is *empty*, in which case
+    ///
+    ///     * `(low, target, high) = (nil, nil, nil)`.
+    ///
+    ///   - The collection has exactly *one element*, in which case
+    ///
+    ///     * `(low, target, high) = (nil, nil, 0)`, if the target element is *smaller*
+    ///       than the collection's single element.
+    ///
+    ///     * `(low, target, high) = (nil, 0, nil)`, if the target element is *equal*
+    ///       to the collection's single element.
+    ///
+    ///     * `(low, target, high) = (0, nil, nil)`, if the target element is *larger*
+    ///       than the collection's single element.
+    ///
+    ///   - The collection has *at least two* elements, in which case
+    ///
+    ///     * `(low, target, high) = (nil, nil, z)`, if the collection is sorted
+    ///       in *ascending order*, the target element *is not* in the collection,
+    ///       and it is *smaller than* the collection's *smallest* element. `z` is
+    ///       then the index of the collection's *smallest* element. This is also
+    ///       the returned result when the collection is sorted in *descending order*,
+    ///       the target element *is not* in the collection, and it is *larger than*
+    ///       the collection's *largest* element. `z` is then the index of the
+    ///       collection's *largest* element.
+    ///
+    ///     * `(low, target, high) = (nil, y, z)`, if the collection is sorted
+    ///       in *ascending order*, the target element *is* in the collection,
+    ///       and it *equals* the collection's *smallest* element. `y` is then
+    ///       the found index of the target element and `z` is the index of the
+    ///       element *just after* that (the *smallest* element that is still
+    ///       *larger* than the target element). This is also the returned result
+    ///       when the collection is sorted in *descending order*, the target
+    ///       element *is* in the collection, and it *equals* the collection's
+    ///       *largest* element. `y` is then the found index of the target
+    ///       element and `z` is the index of the element *just after* that
+    ///       (the *largest* element that is still *smaller* than the target
+    ///       element).
+    ///
+    ///     * `(low, target, high) = (x, y, z)`, if the collection is sorted
+    ///       in *ascending order*, the target element *is* in the collection,
+    ///       and it equals some *intermediate* element. `y` is then the found
+    ///       index of the target element, `x` is the index of the element
+    ///       *just before* that (the *largest* element that is still *smaller*
+    ///       than the target element) and `z` is the index of the element
+    ///       *just after* the target element (the *smallest* element that is
+    ///       still *larger* than the target element). This is also the returned
+    ///       result when the collection is sorted in *descending order*, the target
+    ///       element *is* in the collection, and it equals some *intermediate*
+    ///       element. `y` is then the found index of the target element, `x` is
+    ///       the index of the element *just before* that (the *smallest* element
+    ///       that is still *larger* than the target element) and `z` is the index
+    ///       of the element *just after* the target element (the *largest* element
+    ///       that is still *smaller* than the target element).
+    ///
+    ///     * `(low, target, high) = (x, y, nil)`, if the collection is sorted
+    ///       in *ascending order*, the target element *is* in the collection,
+    ///       and it *equals* the collection's *largest* element. `y` is then
+    ///       the found index of the target element and `x` is the index of
+    ///       the element *just before* that (the *largest* element that is
+    ///       still *smaller* than the target element). This is also the returned
+    ///       result when the collection is sorted in *descending order*, the target
+    ///       element *is* in the collection, and it *equals* the collection's
+    ///       *smallest* element. `y` is then the found index of the target
+    ///       element and `x` is the index of the element *just before* that
+    ///       (the *smallest* element that is still *larger* than the target
+    ///       element).
+    ///
+    ///     * `(low, target, high) = (x, nil, nil)`, if the collection is sorted
+    ///       in *ascending order*, the target element *is not* in the collection,
+    ///       and it is *larger than* the collection's *largest* element. `x` is
+    ///       then the index of the collection's *largest* element. This is also
+    ///       the returned result when the collection is sorted in *descending order*,
+    ///       the target element *is not* in the collection, and it is *smaller than*
+    ///       the collection's *smallest* element. `x` is then the index of
+    ///       the collection's *smallest* element.
+    ///
+    /// For collections with integer indices, `y = x+1` and `z = y+1`.
     ///
     public func binarySearch(for targetElement: Element)
         -> (low: Index?, target: Index?, high: Index?) {
