@@ -6,7 +6,7 @@ extension RandomAccessCollection where Element: Comparable {
     /// input collection, or `nil`, if it does not. It is assumed that
     /// the collection is sorted.
     public static func binarySearch(in input: Self, for targetElement: Element) -> Index? {
-        let (_, targetIndex, _) = input.binarySearch(for: targetElement)
+        let (_, targetIndex, _) = input.binarySearchLoHi(for: targetElement)
         return targetIndex
     }
 
@@ -109,9 +109,9 @@ extension RandomAccessCollection where Element: Comparable {
     ///
     /// For collections with integer indices, `y = x+1` and `z = y+1`.
     ///
-    public static func binarySearch(in input: Self, for targetElement: Element)
+    public static func binarySearchLoHi(in input: Self, for targetElement: Element)
         -> (low: Index?, target: Index?, high: Index?) {
-            let (lowIndex, targetIndex, highIndex) = input.binarySearch(for: targetElement)
+            let (lowIndex, targetIndex, highIndex) = input.binarySearchLoHi(for: targetElement)
             return (lowIndex, targetIndex, highIndex)
     }
 
@@ -205,36 +205,34 @@ extension RandomAccessCollection where Element: Comparable {
     ///
     /// For collections with integer indices, `y = x+1` and `z = y+1`.
     ///
-    public func binarySearch(for targetElement: Element)
+    public func binarySearchLoHi(for targetElement: Element)
         -> (low: Index?, target: Index?, high: Index?) {
 
-        guard isEmpty == false else { return (nil, nil, nil) }
+            guard isEmpty == false else { return (nil, nil, nil) }
 
-        guard count > 1 else {
+            guard count > 1 else {
 
-            // target element found
-            if targetElement == self[startIndex] {
-                return (nil, startIndex, nil)
+                // target element found
+                if targetElement == self[startIndex] {
+                    return (nil, startIndex, nil)
+                }
+
+                // target element not found
+                if targetElement < self[startIndex] {
+                    return (nil, nil, startIndex)
+                } else {
+                    return (startIndex, nil, nil)
+                }
+
             }
 
-            // target element not found
-            if targetElement < self[startIndex] {
-                return (nil, nil, startIndex)
-            } else {
-                return (startIndex, nil, nil)
-            }
+            let firstValidIndex = startIndex
+            let lastValidIndex = index(before: endIndex)
 
-        }
+            let isSortedAscending = self[lastValidIndex] > self[firstValidIndex]
 
-        let firstValidIndex = startIndex
-        let lastValidIndex = index(before: endIndex)
-
-        let isSortedAscending = self[lastValidIndex] > self[firstValidIndex]
-
-        var lowerIndex = firstValidIndex
-        var upperIndex = lastValidIndex
-
-        if isSortedAscending {
+            var lowerIndex = firstValidIndex
+            var upperIndex = lastValidIndex
 
             while (true) {
 
@@ -270,13 +268,13 @@ extension RandomAccessCollection where Element: Comparable {
                         return (index(before: lowerIndex), lowerIndex, index(after: lowerIndex))
                     } else {
                         // target element not found but it is bracketed
-                        if self[lowerIndex] < targetElement {
+                        if isSortedAscending && self[lowerIndex] < targetElement ||
+                            !isSortedAscending && self[lowerIndex] > targetElement {
                             return (lowerIndex, nil, index(after: lowerIndex))
                         } else {
                             return (index(before: lowerIndex), nil, lowerIndex)
                         }
                     }
-
                 }
 
                 if upperMinusLower == 1 { // upperIndex == lowerIndex + 1
@@ -336,17 +334,17 @@ extension RandomAccessCollection where Element: Comparable {
                     return (index(before: currentIndex), currentIndex, index(after: currentIndex))
                 }
 
-                if (self[currentIndex] > targetElement) {
+                let test = isSortedAscending
+                    ? self[currentIndex] > targetElement
+                    : self[currentIndex] < targetElement
+
+                if test {
                     upperIndex = self.index(before: currentIndex)
                 } else {
                     lowerIndex = self.index(after: currentIndex)
                 }
 
             }
-
-        } else {
-
-        }
 
     }
 
