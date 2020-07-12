@@ -11,19 +11,23 @@
 ```swift
 public extension RandomAccessCollection where Element: Comparable {
 
-    /// Returns the index of the target element, if it exists in the
-    /// input collection, or `nil`, if it does not. It is assumed that
-    /// the collection is sorted.
+    // Returns the index of the target element, if it exists in the
+    // input collection, or `nil`, if it does not. It is assumed that
+    // the collection is sorted.
+
     static func binarySearch(in input: Self, for targetElement: Element) -> Index?
+    
     func binarySearch(for targetElement: Element) -> Index?
 
-    /// Returns a tuple containing the indices of the two collection elements
-    /// that narrowly bracket the target element in the input collection
-    /// (**assumed sorted**), as well as the index of the target element itself.
+    // Returns a tuple containing the indices of the two collection elements
+    // that narrowly bracket the target element in the input collection
+    // (assumed sorted), as well as the index of the target element itself.
+    
     static func binarySearchLoHi(in input: Self, for targetElement: Element)
-    -> (low: Index?, target: Index?, high: Index?)
+        -> (low: Index?, target: Index?, high: Index?)
+    
     func binarySearchLoHi(for targetElement: Element)
-    -> (low: Index?, target: Index?, high: Index?) 
+        -> (low: Index?, target: Index?, high: Index?) 
 
 }
 ```
