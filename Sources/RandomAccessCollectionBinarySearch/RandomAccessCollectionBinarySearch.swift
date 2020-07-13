@@ -247,7 +247,13 @@ public extension RandomAccessCollection where Element: Comparable {
                             return (nil, firstValidIndex, index(after: firstValidIndex))
                         } else {
                             // target element not found
-                            return (nil, nil, firstValidIndex)
+                            if isSortedAscending && self[lowerIndex] < targetElement ||
+                              !isSortedAscending && self[lowerIndex] > targetElement {
+                                // but it is bracketed
+                                return (firstValidIndex, nil, index(after: firstValidIndex))
+                            } else {
+                                return (nil, nil, firstValidIndex)
+                            }
                         }
                     }
 
@@ -258,7 +264,13 @@ public extension RandomAccessCollection where Element: Comparable {
                             return (index(before: lastValidIndex), lastValidIndex, nil)
                         } else {
                             // target element not found
-                            return (lastValidIndex, nil, nil)
+                            if isSortedAscending && targetElement < self[lowerIndex] ||
+                              !isSortedAscending && targetElement > self[lowerIndex] {
+                                // but it is bracketed
+                                return (index(before: lastValidIndex), nil, lastValidIndex)
+                            } else {
+                                return (lastValidIndex, nil, nil)
+                            }
                         }
                     }
 
@@ -267,9 +279,10 @@ public extension RandomAccessCollection where Element: Comparable {
                         // target element found and it is an intermediate element
                         return (index(before: lowerIndex), lowerIndex, index(after: lowerIndex))
                     } else {
-                        // target element not found but it is bracketed
+                        // target element not found
                         if isSortedAscending && self[lowerIndex] < targetElement ||
-                            !isSortedAscending && self[lowerIndex] > targetElement {
+                          !isSortedAscending && self[lowerIndex] > targetElement {
+                            // but it is bracketed
                             return (lowerIndex, nil, index(after: lowerIndex))
                         } else {
                             return (index(before: lowerIndex), nil, lowerIndex)
@@ -289,7 +302,13 @@ public extension RandomAccessCollection where Element: Comparable {
                             return (firstValidIndex, upperIndex, index(after: upperIndex))
                         } else {
                             // target element not found
-                            return (nil, nil, firstValidIndex)
+                            if isSortedAscending && self[lowerIndex] < targetElement ||
+                              !isSortedAscending && self[lowerIndex] > targetElement {
+                                // but it is bracketed
+                                return (firstValidIndex, nil, upperIndex)
+                            } else {
+                                return (nil, nil, firstValidIndex)
+                            }
                         }
                     }
 
@@ -303,7 +322,13 @@ public extension RandomAccessCollection where Element: Comparable {
                             return (index(before: lowerIndex), lowerIndex, lastValidIndex)
                         } else {
                             // target element not found
-                            return (lastValidIndex, nil, nil)
+                            if isSortedAscending && targetElement < self[upperIndex] ||
+                              !isSortedAscending && targetElement > self[upperIndex] {
+                                // but it is bracketed
+                                return (lowerIndex, nil, lastValidIndex)
+                            } else {
+                                return (lastValidIndex, nil, nil)
+                            }
                         }
                     }
 
