@@ -368,6 +368,7 @@ final class RandomAccessCollectionBinarySearchTests: XCTestCase {
         ("test_static_general_size_collection_descending", test_static_general_size_collection_descending),
         ("test_static_general_size_collection_ascending_no_tuple", test_static_general_size_collection_ascending_no_tuple),
         ("test_static_general_size_collection_descending_no_tuple", test_static_general_size_collection_descending_no_tuple),
+        ("test_general_size_collection_ascending_random", test_general_size_collection_ascending_random),
 
     ]
 
