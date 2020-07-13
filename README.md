@@ -7,7 +7,10 @@
 
 ## What
 
-**RandomAccessCollectionBinarySearch** is a Swift Package Manager package for iOS/tvOS (10.0 and above), watchOS (4.0 and above), and macOS (10.14 and above), under Swift 5.0 and above,  implementing an extension to `RandomAccessCollection` to add support for performing binary searches on sorted collections:
+**RandomAccessCollectionBinarySearch** is a Swift Package Manager package for iOS/tvOS (10.0 and above), watchOS (4.0 and above), and macOS (10.14 and above), under Swift 5.0 and above,  implementing an extension to `RandomAccessCollection` to add support for performing binary searches on sorted collections.
+
+In particular, in addition to the "normal" binary search, the package provides a version that also returns the indices of the values "bracketing" the value being searched for, with sensible results in all possible situations.
+
 ```swift
 public extension RandomAccessCollection where Element: Comparable {
 
