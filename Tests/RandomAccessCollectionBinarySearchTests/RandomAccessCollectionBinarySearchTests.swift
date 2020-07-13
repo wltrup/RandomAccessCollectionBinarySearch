@@ -308,6 +308,52 @@ final class RandomAccessCollectionBinarySearchTests: XCTestCase {
 
     }
 
+    func test_general_size_collection_ascending_random() {
+
+        let input = (1 ... 10)
+            .map { _ in Double.random(in: 0.25 ... 0.75) }
+            .sorted()
+
+        let belowValue = Double.random(in: 0.0 ... 0.2)
+
+        let firstIndex = 0
+        let firstValue = input.first!
+
+        let insideIndex = Int.random(in: 1 ..< input.count-1)
+        let insideValue = input[insideIndex]
+
+        let lastIndex = input.count - 1
+        let lastValue = input.last!
+
+        let aboveValue = Double.random(in: 0.8 ... 1.0)
+
+        var (low, target, high) = input.binarySearchLoHi(for: belowValue)
+        XCTAssertEqual(low, nil)
+        XCTAssertEqual(target, nil)
+        XCTAssertEqual(high, 0)
+
+        (low, target, high) = input.binarySearchLoHi(for: firstValue)
+        XCTAssertEqual(low, nil)
+        XCTAssertEqual(target, firstIndex)
+        XCTAssertEqual(high, firstIndex+1)
+
+        (low, target, high) = input.binarySearchLoHi(for: insideValue)
+        XCTAssertEqual(low, insideIndex-1)
+        XCTAssertEqual(target, insideIndex)
+        XCTAssertEqual(high, insideIndex+1)
+
+        (low, target, high) = input.binarySearchLoHi(for: lastValue)
+        XCTAssertEqual(low, lastIndex-1)
+        XCTAssertEqual(target, lastIndex)
+        XCTAssertEqual(high, nil)
+
+        (low, target, high) = input.binarySearchLoHi(for: aboveValue)
+        XCTAssertEqual(low, lastIndex)
+        XCTAssertEqual(target, nil)
+        XCTAssertEqual(high, nil)
+
+    }
+
     static var allTests = [
 
         ("test_empty_collection", test_empty_collection),
